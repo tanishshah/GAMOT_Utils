@@ -134,18 +134,51 @@ void resistance_test(){
 
 }
 
+int prevDesiredTemp = -99999;
+
+void PID_example(){
+  
+  int desired_temp = 45;
+
+  if(desired_temp != prevDesiredTemp){
+    set_PID(desired_temp);
+    prevDesiredTemp = desired_temp;
+  }
+
+  
+
+  float temperature = getTemperature();
+  float error = desired_temp - temperature;
+
+
+  updateOhmReading();
+  int val = update_PID_output(temperature);
+
+  analogWrite(8,val);
+  //Serial.print("PID            Temperature          Error");
+  // Serial.print("\n");
+  Serial.print(val);
+  Serial.print("            ");
+  Serial.print(temperature);
+  Serial.print("            ");
+  Serial.print(error);
+  Serial.print("\n");
+
+}
+
+
 void setup(){
   Serial.begin(9600);
   therm_setup();
   pinMode(8, OUTPUT);
   PID_setup();
-  set_PID(40);
+  //set_PID(40);
 }
 
 void loop(){
-  temperatureExample();
+  //temperatureExample();
   
-
+  PID_example();
   //int val = update_PID_output(getTemperature());
 
   /*
