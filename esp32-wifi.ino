@@ -29,7 +29,7 @@ void setup() {
 }
 
 void connectToWifi(){
-    WiFi.disconnect(true);  //disconnect form wifi to set new wifi connection
+  WiFi.disconnect(true);  //disconnect form wifi to set new wifi connection
   WiFi.mode(WIFI_STA); //init wifi mode
 #if __has_include ("esp_eap_client.h")
   esp_eap_client_set_identity((uint8_t *)EAP_ANONYMOUS_IDENTITY, strlen(EAP_ANONYMOUS_IDENTITY)); //provide identity
@@ -42,40 +42,60 @@ void connectToWifi(){
   esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EAP_PASSWORD, strlen(EAP_PASSWORD)); //provide password
   esp_wifi_sta_wpa2_ent_enable();
 #endif
+
   WiFi.begin(ssid); //connect to wifi
+
+  int count = 0;
+
+  Serial.println("\nConnecting to Wifi");
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-    counter++;
-    if (counter >= 60) { //after 30 seconds timeout - reset board (on unsucessful connection)
-      ESP.restart();
+      count++;
+      connectWifi();
+      
     }
-  }
+    
+  
   //client.setCACert(test_root_ca);
 
 }
 
-void wifiTest(){
-   if (WiFi.status() == WL_CONNECTED) { //if we are connected to eduroam network
-    counter = 0; //reset counter
-    Serial.println("Wifi is still connected with IP: ");
-    Serial.println(WiFi.localIP());   //inform user about his IP address
-  } else if (WiFi.status() != WL_CONNECTED) { //if we lost connection, retry
-    WiFi.begin(ssid);
-  }
-  while (WiFi.status() != WL_CONNECTED) { //during lost connection, print dots
-    delay(500);
-    Serial.print(".");
-    counter++;
-    if (counter >= 60) { //30 seconds timeout - reset board
-      ESP.restart();
+unsigned long prevWifiAttemptTime = 0;
+int WifiConnectionAttempts = 0;
+
+//Checks if connected to wifi. If not, tries different fixes. If these do not work then the board will eventually restart
+void connectWifi(){
+
+//try various things to fix the wifi connection
+  if(WiFi.status() != WL_CONNECTED){
+    unsigned long curTime = millis();
+    int interval = 5000;
+  //WiFi takes real time to connect. Dont try starting anything new if we havent given enough time to establish a connection
+    if (curTime-prevWifiAttemptTime >= interval){
+        prevWifiAttemptTime=curTime;
+      //actually try connecting again
+      if(WiFi.status() != WL_CONNECTED){
+        WiFi.disconnect(true);
+        WiFi.begin(ssid);
+        WifiConnectionAttempts++;
+      }
     }
   }
-/*
-    Serial.print("\nLocal ESP32 IP: ");
-    Serial.println(WiFi.localIP());
-    Serial.print("\n");
-  */
+//reset WifiConnectionAttempts iff the board is now connected to wifi
+  if(WiFi.status()==WL_CONNECTED){
+    WifiConnectionAttempts=0;
+  }
+
+//Restart the board if still cannot get a wifi connection. At some point may want to change this to a different criteria
+  if(WifiConnectionAttempts>50 && WiFi.status() != WL_CONNECTED){
+    Serial.print("\n\nERROR: Could not connect to WiFi\n\n");
+    ESP.restart();
+  }
+
+}
+
+
+void wifiExampleTest(){
+
   Serial.print("Connecting to website: ");
   Serial.println(host);
   client.setInsecure();
@@ -111,7 +131,7 @@ void wifiTest(){
 }
 
 void wifiExample(){
-delay(10);
+  delay(10);
   Serial.println();
   Serial.print("Connecting to network: ");
   Serial.println(ssid);
@@ -122,7 +142,7 @@ delay(10);
   Serial.println("WiFi connected");
   Serial.println("IP address set: ");
   Serial.println(WiFi.localIP()); //print LAN IP
-  wifiTest();
+  wifiExampleTest();
 }
 
 void loop() {
