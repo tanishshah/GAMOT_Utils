@@ -1,2 +1,2 @@
 # GAMOT_Utils
-Utilities for the GAMOT project
+Integrated Utilities for the GAMOT project
