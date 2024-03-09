@@ -4,6 +4,7 @@ const char* url = ""; // enter ip address here
 const char* ssid = ""; // wifi connected to (hotspot)
 const char* password = ""; //hotspot password
 const char* SLIME = "slime";
+const char* PELTH = "pelth";
 
 void wifiSetup() {
     WiFi.begin(ssid, password);
@@ -26,7 +27,6 @@ int makeGetRequest() {
         client.println();
     }
 
-    // Read and process the server response here
     // For simplicity, you can print it to the serial monitor
     while (client.connected()) {
         String line = client.readStringUntil('\n');
@@ -35,10 +35,37 @@ int makeGetRequest() {
         // Check if we are interacting with a slime
         if (strstr(inp, SLIME) != NULL) {
           action = 1; // action for haptics
+        } else if (strstr(inp, PELTH) != NULL) {
+          action = 2; // action for peltier hot
         }
     }
     client.stop();
     return action;
+}
+
+void updateDB() {
+if (WiFi.status() == WL_CONNECTED) {
+    WiFiClient client;
+
+    if (client.connect(url, 8080)) {
+      // sample post data
+      String postData = "{\"username\":\"your_username\",\"game\":\"your_game_name\",\"score\":100,\"duration\":120}";
+
+      // TODO: Change the endpoint
+      client.println("POST /sessions HTTP/1.1");
+      client.println("Host: " + String(url));
+      client.println("Content-Type: application/json");
+      client.println("Content-Length: " + String(postData.length()));
+      client.println();
+      client.println(postData);
+    }
+  
+    while (client.connected()) {
+        String line = client.readStringUntil('\n');
+        Serial.println(line);
+    }
+    client.stop();
+  }
 }
 
 /*

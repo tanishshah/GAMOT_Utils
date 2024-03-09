@@ -36,5 +36,9 @@ void loop()
   if (action == 1)
   {
     hapticTest();
+  } 
+  else if (action == 2)
+  {
+    peltierPulseHot();
   }
 }
