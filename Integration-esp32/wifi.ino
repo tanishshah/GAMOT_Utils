@@ -5,6 +5,7 @@ const char* ssid = ""; // wifi connected to (hotspot)
 const char* password = ""; //hotspot password
 const char* SLIME = "slime";
 const char* PELTH = "pelth";
+const char* PELTC = "peltc";
 
 void wifiSetup() {
     WiFi.begin(ssid, password);
@@ -37,6 +38,9 @@ int makeGetRequest() {
           action = 1; // action for haptics
         } else if (strstr(inp, PELTH) != NULL) {
           action = 2; // action for peltier hot
+        } 
+         else if (strstr(inp, PELTC) != NULL) {
+          action = 3; // action for peltier cold
         }
     }
     client.stop();

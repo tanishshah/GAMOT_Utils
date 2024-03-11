@@ -32,13 +32,18 @@ void loop()
   //hapticTest();
   //delay(100);
   //Serial.println(analogRead(A7));
+
   int action = makeGetRequest();
   if (action == 1)
   {
     hapticTest();
+    peltierHardOff();
   } 
   else if (action == 2)
   {
-    peltierPulseHot();
+    peltierH();
+  } else if (action ==3 )
+  {
+    peltierC();
   }
 }

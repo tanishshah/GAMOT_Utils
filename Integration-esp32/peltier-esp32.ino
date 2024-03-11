@@ -22,6 +22,28 @@ void peltierHot(int duration){
   }
 }
 
+void peltierH(){
+  unsigned long curTime = millis();
+  digitalWrite(IA, LOW);
+  digitalWrite(IB, HIGH);
+  Serial.println("HOT");
+  peltPrevTime = curTime;
+  delay(3500);
+  digitalWrite(IA, LOW);
+  digitalWrite(IB, LOW);
+}
+
+void peltierC(){
+  unsigned long curTime = millis();
+  digitalWrite(IA, HIGH);
+  digitalWrite(IB, LOW);
+  Serial.println("COLD");
+  peltPrevTime = curTime;
+  delay(3500);
+  digitalWrite(IA, LOW);
+  digitalWrite(IB, LOW);
+}
+
 void peltierOff(int duration){
   unsigned long curTime = millis();
   if(curTime-peltPrevTime > duration && peltIsOn) {
@@ -31,6 +53,16 @@ void peltierOff(int duration){
     peltPrevTime = curTime;
     Serial.println("OFF");
   }
+}
+
+void peltierHardOff()
+{
+    unsigned long curTime = millis();
+    if(curTime-peltPrevTime>2000) 
+    {
+      digitalWrite(IA, LOW);
+      digitalWrite(IB, LOW);
+    }
 }
 
 void peltierCold(int duration){
@@ -44,15 +76,9 @@ void peltierCold(int duration){
   }
 }
 
-void peltierPulseHot()
-{
-  peltierHot(3000);
-  peltierOff(5500);
-}
-
 void peltierPulseCold()
 {
-  peltierCold(8000);
+  peltierCold(4000);
   peltierOff(4000);
 }
 
