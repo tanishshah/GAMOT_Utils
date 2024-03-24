@@ -1,5 +1,5 @@
-#define IA 32
-#define IB 33
+#define IA 13
+#define IB 14
 
 // TODO: change isOn to an integer state to better allow for hot and cold
 unsigned long peltPrevTime = 0;
@@ -28,7 +28,7 @@ void peltierH(){
   digitalWrite(IB, HIGH);
   Serial.println("HOT");
   peltPrevTime = curTime;
-  delay(3500);
+  delay(5500);
   digitalWrite(IA, LOW);
   digitalWrite(IB, LOW);
 }
@@ -39,7 +39,7 @@ void peltierC(){
   digitalWrite(IB, LOW);
   Serial.println("COLD");
   peltPrevTime = curTime;
-  delay(3500);
+  delay(5500);
   digitalWrite(IA, LOW);
   digitalWrite(IB, LOW);
 }

@@ -1,10 +1,10 @@
 #ifndef FLEXSENSOR
 #define FLEXSENSOR
 
-  #define flex1Pin A14
-  #define flex2Pin A17
-  #define flex3Pin A18
-  #define flex4Pin A14
+  #define flex1Pin A4
+  #define flex2Pin A5
+  #define flex3Pin A17
+  #define flex4Pin A18
 
 #include "SingleEMAFilterLib.h"
 #include<string>
@@ -194,7 +194,6 @@ int getReading(int index){
 }
 
 int prevPosn = -1;
-
 
 //Generic example which outputs the readings from finger 0
 

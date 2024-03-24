@@ -1,13 +1,13 @@
 #include <WiFi.h>
 
-const char* url = ""; // enter ip address here 
-const char* ssid = ""; // wifi connected to (hotspot)
-const char* password = ""; //hotspot password
+
 const char* SLIME = "slime";
 const char* PELTH = "pelth";
 const char* PELTC = "peltc";
+const char* PIN = "pin";
 
 void wifiSetup() {
+  Serial.println("CONNECTING WIFI....");
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500); // TODO: Create a way to make the wifi connection non-blocking during calibration
@@ -34,7 +34,7 @@ int makeGetRequest() {
         const char* inp = line.c_str();
         Serial.println(line);
         // Check if we are interacting with a slime
-        if (strstr(inp, SLIME) != NULL) {
+        if (strstr(inp, SLIME) != NULL || strstr(inp, PIN) != NULL) {
           action = 1; // action for haptics
         } else if (strstr(inp, PELTH) != NULL) {
           action = 2; // action for peltier hot
@@ -72,7 +72,38 @@ if (WiFi.status() == WL_CONNECTED) {
   }
 }
 
+void sendSigState(int arr[]) {
+  Serial.println("trying to send signal...");
+  if (WiFi.status() == WL_CONNECTED) {
+      WiFiClient client;
+
+    if (client.connect(url, 8080)) {
+      // sample post data
+      String s1 = String(arr[0]);
+      String s2 = String(arr[1]);
+      String s3 = String(arr[2]);
+      String s4 = String(arr[3]);
+      String s5 = String(arr[4]);
+      String s6 = String(arr[5]);
+  
+      String postData = "{\"flex1\":" + s1 + ",\"flex2\":" + s2 + ",\"flex3\":" + s3 + ",\"flex4\":" + s4 + ",\"pelt\":" + s5 + ",\"haptics\":" + s6 + "}";
+      Serial.println(postData);
+      // TODO: Change the endpoint
+      client.println("POST /postmcu HTTP/1.1");
+      client.println("Host: " + String(url));
+      client.println("Content-Type: application/json");
+      client.println("Content-Length: " + String(postData.length()));
+      client.println();
+      client.println(postData);
+    }
+
+    Serial.println("done printing");
+    client.stop();
+  }
+}
+
 /*
+
 // use this code to test this code in a standalone way
 void setup() {
     Serial.begin(115200);
@@ -85,6 +116,7 @@ void setup() {
 }
 
 void loop() {
-  makeGetRequest();
+  sendSigState();
+  delay(2000);
 }
 */
